@@ -52,8 +52,6 @@ HELP_TEXT = (
     "• `/unban <reply/@username>` - Unban a user from the group.\n"
     "• `/bypass <reply/@username>` - Whitelist a user (ignore links/bio).\n"
     "• `/unbypass <reply/@username>` - Remove a user from the whitelist.\n\n"
-    "**Owner Commands (DM Only):**\n"
-    "• `/broadcast <reply>` - Send a message to all groups and users."
 )
 
 # --- HELPER FUNCTIONS ---
