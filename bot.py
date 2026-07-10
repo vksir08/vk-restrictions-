@@ -1,7 +1,9 @@
+import asyncio
+asyncio.set_event_loop(asyncio.new_event_loop())
+
 import os
 import re
 import time
-import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatPermissions
 from pyrogram.enums import ChatMemberStatus, ChatType
@@ -407,6 +409,26 @@ async def check_new_member_bio(client: Client, message: Message):
         except Exception:
             pass
 
+from flask import Flask
+import threading
+
+# --- DUMMY WEB SERVER (To keep the bot alive) ---
+web_app = Flask(__name__)
+
+@web_app.route('/')
+def home():
+    return "Bot is alive and running!"
+
+def run_web():
+    # Render assigns a dynamic PORT, default to 8080 if not found
+    port = int(os.environ.get("PORT", 8080))
+    web_app.run(host="0.0.0.0", port=port)
+
 if __name__ == "__main__":
+    print("Starting the dummy web server...")
+    # Start the web server in a separate background thread
+    threading.Thread(target=run_web, daemon=True).start()
+    
     print("Bot is starting with MongoDB connected...")
+    # Start the Telegram bot
     app.run()
