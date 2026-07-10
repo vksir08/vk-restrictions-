@@ -409,26 +409,29 @@ async def check_new_member_bio(client: Client, message: Message):
         except Exception:
             pass
 
-from flask import Flask
-import threading
+from aiohttp import web
+from pyrogram import idle
 
-# --- DUMMY WEB SERVER (To keep the bot alive) ---
-web_app = Flask(__name__)
+async def web_server(request):
+    return web.Response(text="Bot is alive and running!")
 
-@web_app.route('/')
-def home():
-    return "Bot is alive and running!"
-
-def run_web():
-    # Render assigns a dynamic PORT, default to 8080 if not found
+async def main():
+    # 1. Start the dummy web server instantly so Render doesn't fail the port scan
+    web_app = web.Application()
+    web_app.add_routes([web.get('/', web_server)])
+    runner = web.AppRunner(web_app)
+    await runner.setup()
+    
     port = int(os.environ.get("PORT", 8080))
-    web_app.run(host="0.0.0.0", port=port)
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    
+    # 2. Start the Telegram Bot
+    print("Bot is starting with MongoDB connected...")
+    await app.start()
+    await idle()
+    await app.stop()
 
 if __name__ == "__main__":
-    print("Starting the dummy web server...")
-    # Start the web server in a separate background thread
-    threading.Thread(target=run_web, daemon=True).start()
-    
-    print("Bot is starting with MongoDB connected...")
-    # Start the Telegram bot
-    app.run()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
